@@ -1,0 +1,23 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+6, 9, 10, or 11
+
+Q.6 Figure 7.4 is a custom visualization of the birth and completion times for a tree. Design
+an alternative custom visualization of the return value from familyTree().
+
+Q.9 The branching process was summarized by two statistics: the number of generations
+and the number of offspring (see Section 7.9). Consider other summary statistics for the
+process. Incorporate them into exptOne(). Carry out a simulation study and create a
+visualization of the simulation that uses these additional statistics. Do they confirm the
+earlier findings? Do they offer any new insights?
+
+Q.10 Carry out a simulation study to see if the re-parameterization suggested in Section
+7.9.1 is appropriate. For example, fix kappa to be 1, and run the simulation for various
+values of lambda. Compare the results to other simulations where kappa is c not equal 1, but the ratio of lambda/c matches one of the lambda values from the earlier simulation when kappa was 1.
+
+Q.11 Consider other probability functions to describe the lifetime of a process. Revise familyTree() (see Section 7.8) and genKidsV() (see Section 7.5) to take as an argument the
+random number generator for any probability distribution. The functions familyTree()
+and genKidsV() are to use this probability distribution (with arguments that may be
+specific to the distribution) to generate the completion times of the jobs.
