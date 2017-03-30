@@ -21,3 +21,132 @@ Q.11 Consider other probability functions to describe the lifetime of a process.
 random number generator for any probability distribution. The functions familyTree()
 and genKidsV() are to use this probability distribution (with arguments that may be
 specific to the distribution) to generate the completion times of the jobs.
+
+```{r}
+#Generates kids when passed vectors of birth times and completion times
+genKidsV = function(bTimes, cTimes, parentID, lambda = 0.5, kappa = 0.3){
+  
+  parentAge = cTimes - bTimes
+  numKids = rpois(n = length(parentAge), lambda = lambda*parentAge)
+  
+  if (sum(numKids) == 0){
+    return(NULL)
+  }
+  
+  kidStats = mapply(function(n, min, max){
+    births = sort(runif(n, min, max))
+    runtimes = rexp(n, rate = kappa)
+    completes = rep(max, n) + runtimes
+    data.frame(births, completes)
+  }, n = numKids, min = bTimes, max = cTimes, SIMPLIFY = FALSE)
+  
+  return (data.frame(parentID = rep(parentID, numKids),
+                    kidID = 1:sum(numKids), 
+                    births = unlist(lapply(kidStats, "[[", "births")), 
+                    completes = unlist(lapply(kidStats,"[[", "completes"))
+                    ))
+}
+
+#Creates a family tree with a max number of generations and offspring
+familyTree = function(lambda=0.5, kappa=0.3, maxGen=10, maxOffspring=1000){
+  
+  allGens = vector(mode="list", length=maxGen)
+  allGens[[1]] = data.frame(parentID = NA, kidID = 1, births = 0, completes = rexp(1, rate = kappa))
+  
+  currentNumOffspring = 0
+  
+  for (i in 2:maxGen){
+    nextGen = genKidsV(bTimes = allGens[[ ( i - 1 )]]$births,
+                       cTimes = allGens[[ ( i - 1 )]]$completes,
+                       parentID = allGens[[ ( i - 1 )]]$kidID,
+                       lambda = lambda, kappa = kappa)
+    
+    if (is.null(nextGen)){
+      return (allGens[ 1:(i - 1)])
+    }
+    
+    allGens[[i]] = nextGen
+    currentNumOffspring = currentNumOffspring + nrow(nextGen)
+    
+    if (currentNumOffspring > maxOffspring){
+      return (allGens[1:i])
+    }
+  }
+  
+  allGens
+}
+```
+
+```{r}
+#testing family tree call
+seed = 1425
+
+set.seed(seed)
+
+tree = familyTree()
+tree
+
+sapply(tree, nrow)
+```
+
+```{r}
+#prints the number of generations in a family tree and number of total jobs run (children)
+exptOne = function(l, k, mG, mO){
+  aTree = familyTree(lambda = l, kappa = k, maxGen = mG, maxOffspring = mO)
+  
+  numGen = length(aTree)
+  numJobs = sum(sapply(aTree, nrow))
+  
+  c(numGen, numJobs)
+}
+
+set.seed(seed)
+#lambda 1 and kappa 0.5
+exptOne(1, 0.5, 10, 1000)
+```
+
+```{r}
+#iterates over exptOne() for a given list of params (various lambda and kappas)
+# --TAKES LONG TIME TO RUN DEPENDING ON PARAMS SIZE & REPEATS
+monteCarlo = function(params, repeats = 5, mG = 10, mO = 1000){
+  
+  n = nrow(params)
+  
+  mcResults = vector("list", length = n)
+  
+  for (i in 1:n){
+    cat("param set is ", i, "\n")
+    mcResults[[i]] = replicate(repeats, exptOne(l = params[i,1], k = params[i,2], mG = mG, mO = mO))
+  }
+  
+  mcResults
+}
+
+lambdas = c(seq(0.1, 0.6, by=0.1), seq(0.8, 2, by=0.2), seq(2.25, 3, by=0.25))
+kappas = c(lambdas, 3.25, 3.5, 3.73, 4, 4.5, 5)
+
+paramGrid = as.matrix(expand.grid(lambdas, kappas))
+
+numRepeats = 200
+
+mcGrid = monteCarlo(params = paramGrid, repeats = 200, mG = 10, mO = 1000)
+```
+```{r}
+rowMeans(mcGrid[[9]])
+```
+```{r}
+#Average generation size and children count for each combination of kappa and lambda above for 200 trials
+matSize = length(mcGrid)
+rowMeanSum = 0
+
+for (i in 1:matSize){
+  cat ("lambda =", paramGrid[i,]["Var1"])
+  cat (" kappa =", paramGrid[i,]["Var2"])
+  print (rowMeans(mcGrid[[i]]))
+  rowMeanSum = rowMeanSum + rowMeans(mcGrid[[i]])
+}
+```
+```{r}
+#Overall Average of all runs
+rowMeanSum/matSize
+```
