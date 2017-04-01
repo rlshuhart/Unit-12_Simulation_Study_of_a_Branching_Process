@@ -86,10 +86,19 @@ marks <- inner_join(select(df_7.4, kidID, Gen, y_cord),
                     select(df_7.4, parentID, Parent_Gen, births), 
                     by=c("kidID" = "parentID", "Gen"="Parent_Gen"))
 
+gen_lines <- df_7.4 %>% 
+  group_by(Gen) %>% 
+  summarize(Gen_Break = max(y_cord)+.25) %>%
+  mutate(Gen_Label = paste("Gen", Gen))
+
+
 library(ggplot2)
 ggplot(df_7.4) + 
   geom_segment(aes(x = births, y = y_cord, xend = completes, yend = y_cord)) +
   geom_point(aes(x = births, y = y_cord), data = marks, shape=4, size=3, color="red") +
+  geom_hline(aes(yintercept=Gen_Break), data = gen_lines, linetype = 2) +
+  scale_y_continuous(labels=gen_lines$Gen_Label, breaks=gen_lines$Gen_Break) + 
   theme_bw() + 
-  labs(x = "Time")
+  labs(x = "Time") +
+  theme(axis.title.y=element_blank())
 
