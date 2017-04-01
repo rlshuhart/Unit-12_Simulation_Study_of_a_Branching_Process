@@ -105,7 +105,7 @@ set.seed(seed)
 exptOne(1, 0.5, 10, 1000)
 ```
 
-```{r}
+```{r, cache=TRUE}
 #iterates over exptOne() for a given list of params (various lambda and kappas)
 # --TAKES LONG TIME TO RUN DEPENDING ON PARAMS SIZE & REPEATS
 monteCarlo = function(params, repeats = 5, mG = 10, mO = 1000){
