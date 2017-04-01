@@ -65,35 +65,35 @@ exptOne = function(l, k, mG, mO){
 }
 
 
-set.seed(12062013); fig7.4 <- familyTree(lambda = .4, kappa = 1, maxGen = 10)
+set.seed(12062013); tree <- familyTree(lambda = .4, kappa = 1, maxGen = 10)
 
-df_7.4 <- data.frame()
-for (i in 1:length(fig7.4)){
+tree_df <- data.frame()
+for (i in 1:length(tree)){
     # convert gen i to data frame
-    tmp <- as.data.frame(fig7.4[i])
+    tmp <- as.data.frame(tree[i])
     # lable gen i
     tmp$Gen <- i
-    df_7.4 <- rbind(df_7.4, tmp)
+    tree_df <- rbind(tree_df, tmp)
 }
 
 # Add y cord
-df_7.4$y_cord <- 1:nrow(df_7.4)*.5
-#df_7.4$y_cord2 <- 0:(nrow(df_7.4)-1)*.5
-df_7.4$Parent_Gen <- df_7.4$Gen-1
+tree_df$y_cord <- 1:nrow(tree_df)*.5
+#tree_df$y_cord2 <- 0:(nrow(tree_df)-1)*.5
+tree_df$Parent_Gen <- tree_df$Gen-1
 
 library(dplyr)
-marks <- inner_join(select(df_7.4, kidID, Gen, y_cord), 
-                    select(df_7.4, parentID, Parent_Gen, births), 
+marks <- inner_join(select(tree_df, kidID, Gen, y_cord), 
+                    select(tree_df, parentID, Parent_Gen, births), 
                     by=c("kidID" = "parentID", "Gen"="Parent_Gen"))
 
-gen_lines <- df_7.4 %>% 
+gen_lines <- tree_df %>% 
   group_by(Gen) %>% 
   summarize(Gen_Break = max(y_cord)+.25) %>%
   mutate(Gen_Label = paste("Gen", Gen))
 
 
 library(ggplot2)
-ggplot(df_7.4) + 
+ggplot(tree_df) + 
   geom_segment(aes(x = births, y = y_cord, xend = completes, yend = y_cord)) +
   geom_point(aes(x = births, y = y_cord), data = marks, shape=4, size=3, color="red") +
   geom_hline(aes(yintercept=Gen_Break), data = gen_lines, linetype = 2) +
