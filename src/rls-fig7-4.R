@@ -69,16 +69,27 @@ set.seed(12062013); fig7.4 <- familyTree(lambda = .4, kappa = 1, maxGen = 10)
 
 df_7.4 <- data.frame()
 for (i in 1:length(fig7.4)){
-  # convert gen i to data frame
-  tmp <- as.data.frame(fig7.4[i])
-  # lable gen i
-  tmp$Gen <- i
-  df_7.4 <- rbind(df_7.4, tmp)
+    # convert gen i to data frame
+    tmp <- as.data.frame(fig7.4[i])
+    # lable gen i
+    tmp$Gen <- i
+    df_7.4 <- rbind(df_7.4, tmp)
 }
 
+# Add y cord
+df_7.4$y_cord <- 1:nrow(df_7.4)*.5
+#df_7.4$y_cord2 <- 0:(nrow(df_7.4)-1)*.5
+df_7.4$Parent_Gen <- df_7.4$Gen-1
 
+library(dplyr)
+marks <- inner_join(select(df_7.4, kidID, Gen, y_cord), 
+                    select(df_7.4, parentID, Parent_Gen, births), 
+                    by=c("kidID" = "parentID", "Gen"="Parent_Gen"))
 
-rbind(df_7.4, cbind(as.data.frame(fig7.4[2]), Gen =2))
-length(fig7.4)
-
+library(ggplot2)
+ggplot(df_7.4) + 
+  geom_segment(aes(x = births, y = y_cord, xend = completes, yend = y_cord)) +
+  geom_point(aes(x = births, y = y_cord), data = marks, shape=4, size=3, color="red") +
+  theme_bw() + 
+  labs(x = "Time")
 
