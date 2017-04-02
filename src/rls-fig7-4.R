@@ -65,40 +65,48 @@ exptOne = function(l, k, mG, mO){
 }
 
 
-set.seed(12062013); tree <- familyTree(lambda = .4, kappa = 1, maxGen = 10)
-
-tree_df <- data.frame()
-for (i in 1:length(tree)){
-    # convert gen i to data frame
-    tmp <- as.data.frame(tree[i])
-    # lable gen i
-    tmp$Gen <- i
-    tree_df <- rbind(tree_df, tmp)
+draw_tree <- function(lambda = .4, kappa = 1, maxGen = 10, seedx=12062013){
+  library(dplyr)
+  library(ggplot2)
+  set.seed(seedx); tree <- familyTree(lambda=lambda, kappa = kappa, maxGen = maxGen)
+  
+  tree_df <- data.frame()
+  for (i in 1:length(tree)){
+      # convert gen i to data frame
+      tmp <- as.data.frame(tree[i])
+      # lable gen i
+      tmp$Gen <- i
+      tree_df <- rbind(tree_df, tmp)
+  }
+  
+  # Add y cord
+  tree_df$y_cord <- 1:nrow(tree_df)*.5
+  #tree_df$y_cord2 <- 0:(nrow(tree_df)-1)*.5
+  tree_df$Parent_Gen <- tree_df$Gen-1
+  
+  marks <- inner_join(select(tree_df, kidID, Gen, y_cord), 
+                      select(tree_df, parentID, Parent_Gen, births), 
+                      by=c("kidID" = "parentID", "Gen"="Parent_Gen"))
+  
+  gen_lines <- tree_df %>% 
+    group_by(Gen) %>% 
+    summarize(Gen_Break = max(y_cord)+.25) %>%
+    mutate(Gen_Label = paste("Gen", Gen))
+  
+  g <- ggplot(tree_df) + 
+    geom_segment(aes(x = births, y = y_cord, xend = completes, yend = y_cord)) +
+    geom_point(aes(x = births, y = y_cord), data = marks, shape=4, size=3, color="red") +
+    geom_hline(aes(yintercept=Gen_Break), data = gen_lines, linetype = 2) +
+    scale_y_continuous(labels=gen_lines$Gen_Label, breaks=gen_lines$Gen_Break) + 
+    theme_bw() + 
+    labs(x = "Time") +
+    theme(axis.title.y=element_blank(),
+          panel.grid.major.y = element_blank(),
+          panel.grid.minor.y = element_blank(),
+          panel.grid.major.x = element_blank(),
+          panel.grid.minor.x = element_blank())
+  
+  return(g)
 }
 
-# Add y cord
-tree_df$y_cord <- 1:nrow(tree_df)*.5
-#tree_df$y_cord2 <- 0:(nrow(tree_df)-1)*.5
-tree_df$Parent_Gen <- tree_df$Gen-1
-
-library(dplyr)
-marks <- inner_join(select(tree_df, kidID, Gen, y_cord), 
-                    select(tree_df, parentID, Parent_Gen, births), 
-                    by=c("kidID" = "parentID", "Gen"="Parent_Gen"))
-
-gen_lines <- tree_df %>% 
-  group_by(Gen) %>% 
-  summarize(Gen_Break = max(y_cord)+.25) %>%
-  mutate(Gen_Label = paste("Gen", Gen))
-
-
-library(ggplot2)
-ggplot(tree_df) + 
-  geom_segment(aes(x = births, y = y_cord, xend = completes, yend = y_cord)) +
-  geom_point(aes(x = births, y = y_cord), data = marks, shape=4, size=3, color="red") +
-  geom_hline(aes(yintercept=Gen_Break), data = gen_lines, linetype = 2) +
-  scale_y_continuous(labels=gen_lines$Gen_Label, breaks=gen_lines$Gen_Break) + 
-  theme_bw() + 
-  labs(x = "Time") +
-  theme(axis.title.y=element_blank())
-
+draw_tree()
