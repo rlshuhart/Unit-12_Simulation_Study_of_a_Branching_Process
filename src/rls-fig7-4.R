@@ -88,6 +88,9 @@ draw_tree <- function(lambda = .4, kappa = 1, maxGen = 10, seedx=12062013){
                       select(tree_df, parentID, Parent_Gen, births), 
                       by=c("kidID" = "parentID", "Gen"="Parent_Gen"))
   
+  conn_lines <- inner_join(select(tree_df, births, y_cord),
+                          select(marks, births, y_cord), by="births")
+  
   gen_lines <- tree_df %>% 
     group_by(Gen) %>% 
     summarize(Gen_Break = max(y_cord)+.25) %>%
@@ -95,6 +98,7 @@ draw_tree <- function(lambda = .4, kappa = 1, maxGen = 10, seedx=12062013){
   
   g <- ggplot(tree_df) + 
     geom_segment(aes(x = births, y = y_cord, xend = completes, yend = y_cord)) +
+    geom_segment(aes(x = births, y = y_cord.x, xend = births, yend = y_cord.y), data = conn_lines, linetype = 3) +
     geom_point(aes(x = births, y = y_cord), data = marks, shape=4, size=3, color="red") +
     geom_hline(aes(yintercept=Gen_Break), data = gen_lines, linetype = 2) +
     scale_y_continuous(labels=gen_lines$Gen_Label, breaks=gen_lines$Gen_Break) + 

@@ -1,11 +1,11 @@
 library(shiny)
 
 ui <- fluidPage(
-  headerPanel('Simulated Branch Precess Tree'),
+  headerPanel('Simulated Branch Process Family Tree'),
   sidebarPanel(
     sliderInput("lambda", "Select Lambda", min = .1, max=1.2, value=.4),
     sliderInput("kappa", "Select Kappa", min = .1, max=1.5, value=1),
-    sliderInput("MaxGen", "Select Maximum Gen", min = 1, max=20, value=10),
+    sliderInput("MaxGen", "Select Max Generations", min = 1, max=20, value=10),
     numericInput("seed", "Input Seed", value = 12062013)
     ),
   mainPanel(
@@ -16,7 +16,7 @@ ui <- fluidPage(
 server <- function(input, output) {
 
   vis <- renderPlot({
-    # Only Simulation Code
+
     genKidsV = function(bTimes, cTimes, parentID, lambda = 0.5, kappa = 0.3) {
       # Determine how many children each job has
       parentAge = cTimes - bTimes
@@ -71,18 +71,6 @@ server <- function(input, output) {
       allGens
     }
     
-    exptOne = function(l, k, mG, mO){
-      # Helper function to call familyTree
-      # Returns - summary statistics for analysis,
-      
-      aTree = familyTree(lambda = l, kappa = k, maxGen = mG,
-                         maxOffspring = mO)
-      numGen = length(aTree)
-      numJobs = sum(sapply(aTree, nrow))
-      c(numGen, numJobs)
-    }
-    
-    
     draw_tree <- function(lambda = .4, kappa = 1, maxGen = 10, seedx=12062013){
       library(dplyr)
       library(ggplot2)
@@ -99,21 +87,29 @@ server <- function(input, output) {
       
       # Add y cord
       tree_df$y_cord <- 1:nrow(tree_df)*.5
-      #tree_df$y_cord2 <- 0:(nrow(tree_df)-1)*.5
+      
+      # Add parent generation reference
       tree_df$Parent_Gen <- tree_df$Gen-1
       
+      # Self join the table to identify the births on the parent
       marks <- inner_join(select(tree_df, kidID, Gen, y_cord), 
                           select(tree_df, parentID, Parent_Gen, births), 
                           by=c("kidID" = "parentID", "Gen"="Parent_Gen"))
       
+      # Connect birth to life line
+      conn_lines <- inner_join(select(tree_df, births, y_cord),
+                               select(marks, births, y_cord), by="births")
+      
+      # Generation separation locations
       gen_lines <- tree_df %>% 
         group_by(Gen) %>% 
         summarize(Gen_Break = max(y_cord)+.25) %>%
         mutate(Gen_Label = paste("Gen", Gen))
       
       g <- ggplot(tree_df) + 
-        geom_segment(aes(x = births, y = y_cord, xend = completes, yend = y_cord)) +
-        geom_point(aes(x = births, y = y_cord), data = marks, shape=4, size=3, color="red") +
+        geom_segment(aes(x = births, y = y_cord, xend = completes, yend = y_cord), color="#7B7F7B", size=1.25) +
+        geom_segment(aes(x = births, y = y_cord.x, xend = births, yend = y_cord.y), data = conn_lines, linetype = 3, color="#00CC00") +
+        geom_point(aes(x = births, y = y_cord), data = marks, shape=19, size=3, color="#007F00") +
         geom_hline(aes(yintercept=Gen_Break), data = gen_lines, linetype = 2) +
         scale_y_continuous(labels=gen_lines$Gen_Label, breaks=gen_lines$Gen_Break) + 
         theme_bw() + 
