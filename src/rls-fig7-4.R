@@ -72,34 +72,38 @@ draw_tree <- function(lambda = .4, kappa = 1, maxGen = 10, seedx=12062013){
   
   tree_df <- data.frame()
   for (i in 1:length(tree)){
-      # convert gen i to data frame
-      tmp <- as.data.frame(tree[i])
-      # lable gen i
-      tmp$Gen <- i
-      tree_df <- rbind(tree_df, tmp)
+    # convert gen i to data frame
+    tmp <- as.data.frame(tree[i])
+    # lable gen i
+    tmp$Gen <- i
+    tree_df <- rbind(tree_df, tmp)
   }
   
   # Add y cord
   tree_df$y_cord <- 1:nrow(tree_df)*.5
-  #tree_df$y_cord2 <- 0:(nrow(tree_df)-1)*.5
+  
+  # Add parent generation reference
   tree_df$Parent_Gen <- tree_df$Gen-1
   
+  # Self join the table to identify the births on the parent
   marks <- inner_join(select(tree_df, kidID, Gen, y_cord), 
                       select(tree_df, parentID, Parent_Gen, births), 
                       by=c("kidID" = "parentID", "Gen"="Parent_Gen"))
   
+  # Connect birth to life line
   conn_lines <- inner_join(select(tree_df, births, y_cord),
-                          select(marks, births, y_cord), by="births")
+                           select(marks, births, y_cord), by="births")
   
+  # Generation separation locations
   gen_lines <- tree_df %>% 
     group_by(Gen) %>% 
     summarize(Gen_Break = max(y_cord)+.25) %>%
     mutate(Gen_Label = paste("Gen", Gen))
   
   g <- ggplot(tree_df) + 
-    geom_segment(aes(x = births, y = y_cord, xend = completes, yend = y_cord)) +
-    geom_segment(aes(x = births, y = y_cord.x, xend = births, yend = y_cord.y), data = conn_lines, linetype = 3) +
-    geom_point(aes(x = births, y = y_cord), data = marks, shape=4, size=3, color="red") +
+    geom_segment(aes(x = births, y = y_cord, xend = completes, yend = y_cord), color="#7B7F7B", size=1.25) +
+    geom_segment(aes(x = births, y = y_cord.x, xend = births, yend = y_cord.y), data = conn_lines, linetype = 3, color="#00CC00") +
+    geom_point(aes(x = births, y = y_cord), data = marks, shape=19, size=3, color="#007F00") +
     geom_hline(aes(yintercept=Gen_Break), data = gen_lines, linetype = 2) +
     scale_y_continuous(labels=gen_lines$Gen_Label, breaks=gen_lines$Gen_Break) + 
     theme_bw() + 
