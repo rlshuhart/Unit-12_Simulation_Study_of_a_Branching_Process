@@ -11,6 +11,8 @@ https://github.com/rlshuhart/Unit-12_Simulation_Study_of_a_Branching_Process/
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
+
 ## Replot of Figure 7.4
 The below tree plot is an alternative custom visualization for figure 7.4.
 ```{r, echo=FALSE, fig.width=10, message=FALSE, warning=FALSE}

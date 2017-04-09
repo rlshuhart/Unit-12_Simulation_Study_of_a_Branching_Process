@@ -1,4 +1,4 @@
----
+--
 title: "Branching Processes and Monte Carlo Simulation"
 author: "Brett Hallum, Chris Ficklin, and Ryan Shuhart"
 date: "April 2017"
