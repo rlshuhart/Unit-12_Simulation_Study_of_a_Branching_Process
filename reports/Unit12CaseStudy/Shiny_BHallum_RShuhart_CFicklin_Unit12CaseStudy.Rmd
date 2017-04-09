@@ -1,7 +1,7 @@
 ---
 title: "Branching Processes and Monte Carlo Simulation"
 author: "Brett Hallum, Chris Ficklin, and Ryan Shuhart"
-date: "April 8, 2017"
+date: "April 2017"
 output: html_document
 runtime: shiny
 subtitle: MSDS 7333-401
@@ -10,11 +10,21 @@ https://github.com/rlshuhart/Unit-12_Simulation_Study_of_a_Branching_Process/
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+# Q.6 Figure 7.4 is a custom visualization of the birth and completion times for a tree. Design an alternative custom visualization of the return value from familyTree().
+
+## Introduction 
+Monte Carlo simulations can be used to test a theory by taking many random samples approximating characteristics. 
+
+## Background 
 
 
+## Methods
+The familyTree simulation determines how many children are born from each parent and will continue to simulate until either no children are born or the max generations parameter is reached
 
-## Replot of Figure 7.4
-The below tree plot is an alternative custom visualization for figure 7.4.
+## Results
+The following are vizualizations of the birth and completion times for a tree using the same data from Fig 7.4 in <i><b>Data Science in R</i></b> by Deborah Nolan and Duncan Temple Lang. Figure 1 is an alternative view as a downward facing tree. In Figure 2, the design is mostly the same as used in the book, however, it is interactive and lambda, kappa, max generation, and random seed are adjustable.
+
+### Alternative Vizualization of a Family Tree Shown in Fig 7.4 of <i><b>Data Science in R</i></b>
 ```{r, echo=FALSE, fig.width=10, message=FALSE, warning=FALSE}
 # Only Simulation Code
 genKidsV = function(bTimes, cTimes, parentID, lambda = 0.5, kappa = 0.3) {
@@ -71,18 +81,6 @@ familyTree = function(lambda = 0.5, kappa = 0.3,
   allGens
 }
 
-exptOne = function(l, k, mG, mO){
-  # Helper function to call familyTree
-  # Returns - summary statistics for analysis,
-  
-  aTree = familyTree(lambda = l, kappa = k, maxGen = mG,
-                     maxOffspring = mO)
-  numGen = length(aTree)
-  numJobs = sum(sapply(aTree, nrow))
-  c(numGen, numJobs)
-}
-
-
 draw_tree <- function(lambda = .4, kappa = 1, maxGen = 10, seedx=12062013){
   library(dplyr)
   library(ggplot2)
@@ -126,7 +124,7 @@ draw_tree <- function(lambda = .4, kappa = 1, maxGen = 10, seedx=12062013){
     geom_point(aes(y = -births, x = x_cord), data = marks, shape=19, size=3, color="#007F00") +
     scale_color_discrete(name="Generation")+ 
     theme_bw() + 
-    labs(y = "Time") +
+    labs(title = "Fig. 1") +
     theme(axis.title.y=element_blank(),
           axis.title.x=element_blank(),
           panel.grid.major.y = element_blank(),
@@ -146,8 +144,7 @@ draw_tree()
 ```
 
 
-## Interactive Visualization of Fig 7.4
-On the below visualization the parameters of lambda, kappa, max generation, and random seed are adjustable. The defaul settings match the figure 7.4 
+### Interactive Visualization of Fig 7.4 in <i><b>Data Science in R</i></b>
 ```{r tabsets, echo=FALSE}
 
 ui <- fluidPage(
@@ -263,7 +260,7 @@ server <- function(input, output) {
         geom_hline(aes(yintercept=Gen_Break), data = gen_lines, linetype = 2) +
         scale_y_continuous(labels=gen_lines$Gen_Label, breaks=gen_lines$Gen_Break) +
         theme_bw() +
-        labs(x = "Time") +
+        labs(x = "Time", title="Fig. 2") +
         theme(axis.title.y=element_blank(),
               panel.grid.major.y = element_blank(),
               panel.grid.minor.y = element_blank(),
@@ -288,6 +285,9 @@ server <- function(input, output) {
 
 shinyApp(ui = ui, server = server, options = list(width = "100%", height = 900))
 ```
+
+## Conclusion
+
 
 ## Bibliography
 * Data Science in R: A Case Studies Approach to Computational Reasoning and Problem Solving by Deborah Nolan and Duncan Temple Lang 
