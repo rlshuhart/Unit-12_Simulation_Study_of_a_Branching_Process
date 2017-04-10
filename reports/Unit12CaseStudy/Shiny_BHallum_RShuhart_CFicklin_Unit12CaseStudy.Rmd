@@ -286,10 +286,13 @@ server <- function(input, output) {
 shinyApp(ui = ui, server = server, options = list(width = "100%", height = 900))
 ```
 
-## Conclusion
+## Conclusion & Future Analysis
+The new vertical tree view that we created for a given family tree is easier to read because it is better suited at determining where kids in lower generations are spawned. We were still able to keep the time factor, but now on the vertical axis. The generational knowledge also remains due to the change in color for each different generation. As part of further analysis, it would be good to be able to produce this new form of the family tree for any tree produced in the interactive visualization. Throughout the process of drawing this version of the tree, we were able to come up with an algorithm to determine where branches should be placed, however, we were unable to implement it fully. The algorithm, known as a level-based approach, is based on a regression algorithm that is well suited for binary solutions (RT81). We attempted to modify it to work for parents with more than 2 children in the method listed below.
 
+The basic idea of the algorithm is to figure out a total count for each branch with children. This tells us how many branches are in each family tree, with each branch being a family tree in itself, which includes the parents' self. From this count, we know how many horizontal positions are needed to generate a tree where none of the branches intersect. The rules that we would implement that diverge from the RT81 algorithm are that all odd children would be spawned to the left of the parent and even children would be spawned to the right. The spacing of these children is based on the number of children in each of the branches and any branches that are "above" them in the family tree. We made solid progress in getting this algorithm working, however we ran out of time to fully get the positioning portion for each child working as intended.
 
 ## Bibliography
 * Data Science in R: A Case Studies Approach to Computational Reasoning and Problem Solving by Deborah Nolan and Duncan Temple Lang 
 * http://docs.ggplot2.org/current/ 
 * https://shiny.rstudio.com/tutorial/
+* https://cs.brown.edu/~rt/gdhandbook/chapters/trees.pdf
