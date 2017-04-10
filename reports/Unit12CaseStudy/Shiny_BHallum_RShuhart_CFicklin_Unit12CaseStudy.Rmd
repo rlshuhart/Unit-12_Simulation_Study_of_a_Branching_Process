@@ -7,6 +7,11 @@ runtime: shiny
 subtitle: MSDS 7333-401
 ---
 https://github.com/rlshuhart/Unit-12_Simulation_Study_of_a_Branching_Process/
+
+*** Instructions for running this notebook ***
+Click this link ....
+Or in rstudio click run app
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
