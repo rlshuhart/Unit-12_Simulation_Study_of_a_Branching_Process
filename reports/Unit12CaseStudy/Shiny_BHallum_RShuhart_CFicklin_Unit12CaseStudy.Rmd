@@ -8,9 +8,16 @@ subtitle: MSDS 7333-401
 ---
 https://github.com/rlshuhart/Unit-12_Simulation_Study_of_a_Branching_Process/
 
-*** Instructions for running this notebook ***
-Click this link ....
-Or in rstudio click run app
+<font color="red">
+
+#### *Instructions for Viewing this Notebook*<br>
+This notebook is interactive and run's on RStudio's Shiny, and there are two ways to properly view this notebook.
+
+1. Click this link:  https://ryan-shuhart.shinyapps.io/unit12casestudy/ <br>
+Or 
+2. In RStudio, open this notebook and click "Run Document" located at the top of the script pane.
+
+</font>
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
