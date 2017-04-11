@@ -23,22 +23,37 @@ https://github.com/rlshuhart/Unit-12_Simulation_Study_of_a_Branching_Process/
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(shiny)
 ```
 # Question 6
 Figure 7.4 is a custom visualization of the birth and completion times for a tree. Design an alternative custom visualization of the return value from familyTree().
 
 
 ## Introduction 
-Monte Carlo simulations can be used to test a theory by taking many random samples approximating characteristics. 
+Certain computer processing tasks lend themselves to parallel execution across multiple CPUs. In these cases, it is common for each process to spawn additional jobs which necessitate the completion of their parents' task before they can run. When modeled, the result is a branched tree structure with several features. 
 
-## Background 
+* First, the initial process generates additional jobs (offspring) whose start times are independent and identically distributed. 
 
+* Each offspring, which takes the output of its parent process, must wait until that parent job is complete before it can execute. 
+
+* Finally, each child job may initiate its own child processes which again are I.I.D.
+
+It is possible, though complex, to mathematically model the outcomes of this type of branched tree structure given certain constraint parameters on the rates of parent and child job creation with respect to a probability distribution. However, when seeking to explore how changes to those parameters may affect the likely outcomes, it becomes even more burdensome as the complex math must be repeated. 
+Monte Carlo simulation is a useful method to approximate the same results by analyzing many repeated outcomes generated randomly from a probability distribution.
+
+
+## Background
+Our aim is to create an interactive visualization to aid in the exploratory process that accompanies the creation of a Monte Carlo simulation for this problem. It will provide a convenient user experience whereby the effect of changes to the input constraints can be easily and repeatedly visualized in a branched tree diagram showing the resulting process generations, including the lifetime cycles of related birth-death relationships between each parent and child. Each result will represent a singular instance, potentially one of thousands of repetitions making up a Monte Carlo simulation.
+
+The visualization will improve on static R plots by allowing instant updating of the output via changes to randomization seed. Likewise, the input constraints can be dynamically changed to easily explore how various parameters can potentially alter the resulting tree. 
 
 ## Methods
-The familyTree simulation determines how many children are born from each parent and will continue to simulate until either no children are born or the max generations parameter is reached
+Shiny is a framework for creating interactive web-based visualizations from R projects. These expand familiar static visualizations and make them dynamic, more attractive, and easier to share and analyze.
+
+The familyTree simulation determines how many children are born from each parent and will continue to simulate until either no children are born or the max generations parameter is reached.
 
 ## Results
-The following are vizualizations of the birth and completion times for a tree using the same data from Fig 7.4 in <i><b>Data Science in R</i></b> by Deborah Nolan and Duncan Temple Lang. In Figure 1, the design is mostly the same as used in the book, however, it is interactive and lambda, kappa, max generation, and random seed are adjustable. Figure 2 is an alternative view as a downward facing tree. 
+The following are visualizations of the birth and completion times for a tree using the same data from Fig 7.4 in <i><b>Data Science in R</i></b> by Deborah Nolan and Duncan Temple Lang. In Figure 1, the design is mostly the same as used in the book, however, it is interactive and lambda, kappa, max generation, and random seed are adjustable. Figure 2 is an alternative view as a downward facing tree. In each case, the generations are color-coded to aid visibility.
 
 ### Interactive Visualization of Fig 7.4 in <i><b>Data Science in R</i></b>
 ```{r tabsets, echo=FALSE}
@@ -182,7 +197,8 @@ server <- function(input, output) {
 shinyApp(ui = ui, server = server, options = list(width = "100%", height = 900))
 ```
 
-### Alternative Vizualization of a Family Tree Shown in Fig 7.4 of <i><b>Data Science in R</i></b>
+### Alternative Visualization of a Family Tree Shown in Fig 7.4 of Data Science in R
+Figure 2 is an alternate visualization representing of a complete cycle in a vertical tree format with several improvements not yet implemented in a Shiny App. It better maintains the visual relationship between parent and child process by grouping them together. Unfortunately, however, the algorithm required to determine the branch spacing is complicated to calculate dynamically. As such, this was not able to be implemented in a similar Shiny App. It remains for future work to overcome that challenge.
 ```{r, echo=FALSE, fig.width=9, message=FALSE, warning=FALSE}
 # Only Simulation Code
 genKidsV = function(bTimes, cTimes, parentID, lambda = 0.5, kappa = 0.3) {
@@ -300,9 +316,6 @@ draw_tree <- function(lambda = .4, kappa = 1, maxGen = 10, seedx=12062013){
 draw_tree()
 
 ```
-
-
-
 
 ## Conclusion & Future Analysis
 The new vertical tree view that we created for a given family tree is easier to read because it is better suited at determining where kids in lower generations are spawned. We were still able to keep the time factor, but now on the vertical axis. The generational knowledge also remains due to the change in color for each different generation. As part of further analysis, it would be good to be able to produce this new form of the family tree for any tree produced in the interactive visualization. Throughout the process of drawing this version of the tree, we were able to come up with an algorithm to determine where branches should be placed, however, we were unable to implement it fully. The algorithm, known as a level-based approach, is based on a regression algorithm that is well suited for binary solutions (RT81). We attempted to modify it to work for parents with more than 2 children in the method listed below.
