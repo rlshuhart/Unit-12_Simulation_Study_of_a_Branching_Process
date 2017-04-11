@@ -23,7 +23,6 @@ https://github.com/rlshuhart/Unit-12_Simulation_Study_of_a_Branching_Process/
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(shiny)
 ```
 # Question 6
 Figure 7.4 is a custom visualization of the birth and completion times for a tree. Design an alternative custom visualization of the return value from familyTree().
