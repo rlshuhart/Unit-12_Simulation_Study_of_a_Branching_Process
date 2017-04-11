@@ -2,11 +2,15 @@
 title: "Branching Processes and Monte Carlo Simulation"
 author: "Brett Hallum, Chris Ficklin, and Ryan Shuhart"
 date: "April 2017"
-output: html_document
+output:
+  html_document:
+    toc: true
+    toc_float: true
 runtime: shiny
 subtitle: MSDS 7333-401
 ---
 https://github.com/rlshuhart/Unit-12_Simulation_Study_of_a_Branching_Process/
+
 
 ```{r, eval=FALSE, include=FALSE}
 #-----------------------------> Instructions for Viewing this Notebook <-------------------------------------------
@@ -20,7 +24,9 @@ https://github.com/rlshuhart/Unit-12_Simulation_Study_of_a_Branching_Process/
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-# Q.6 Figure 7.4 is a custom visualization of the birth and completion times for a tree. Design an alternative custom visualization of the return value from familyTree().
+# Question 6
+Figure 7.4 is a custom visualization of the birth and completion times for a tree. Design an alternative custom visualization of the return value from familyTree().
+
 
 ## Introduction 
 Monte Carlo simulations can be used to test a theory by taking many random samples approximating characteristics. 
