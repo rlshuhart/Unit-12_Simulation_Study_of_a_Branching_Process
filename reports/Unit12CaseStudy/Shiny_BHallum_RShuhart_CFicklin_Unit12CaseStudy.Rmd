@@ -198,7 +198,7 @@ shinyApp(ui = ui, server = server, options = list(width = "100%", height = 900))
 ```
 
 ### Alternative Visualization of a Family Tree Shown in Fig 7.4 of Data Science in R
-Figure 2 is an alternate visualization representing of a complete cycle in a vertical tree format with several improvements not yet implemented in a Shiny App. It better maintains the visual relationship between parent and child process by grouping them together. Unfortunately, however, the algorithm required to determine the branch spacing is complicated to calculate dynamically. As such, this was not able to be implemented in a similar Shiny App. It remains for future work to overcome that challenge.
+Figure 2 is an alternate visualization representing of a complete cycle in a vertical tree format with several improvements not yet implemented in a Shiny App. It better maintains the visual relationship between parent and child process by grouping them together. Unfortunately, however, the algorithm required to determine the branch spacing is complicated to calculate dynamically. As such, this was not able to be implemented in a similar Shiny App. It remains future work to overcome that challenge.
 ```{r, echo=FALSE, fig.width=9, message=FALSE, warning=FALSE}
 # Only Simulation Code
 genKidsV = function(bTimes, cTimes, parentID, lambda = 0.5, kappa = 0.3) {
