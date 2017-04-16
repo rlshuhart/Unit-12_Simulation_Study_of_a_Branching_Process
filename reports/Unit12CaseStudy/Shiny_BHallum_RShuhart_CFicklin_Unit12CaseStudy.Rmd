@@ -13,7 +13,7 @@ https://github.com/rlshuhart/Unit-12_Simulation_Study_of_a_Branching_Process/
 
 
 ```{r, eval=FALSE, include=FALSE}
-#-----------------------> Instructions for Viewing this Notebook <-----------------------
+#-----------------------------> Instructions for Viewing this Notebook <-------------------------------------------
 # This notebook is interactive and run's on RStudio's Shiny, and there are two ways to properly view this notebook.
 # 
 # 1. Go to this link:  https://ryan-shuhart.shinyapps.io/unit12casestudy/
